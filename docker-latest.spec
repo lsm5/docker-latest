@@ -28,14 +28,14 @@
 
 # docker
 %global git0 https://github.com/projectatomic/%{repo}
-%global commit0 222ea447555b937a1024131b8abce6496a38ebcf
+%global commit0 3625f731e409765c0da3beb42581c754ccec7abd
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.13
 
 # d-s-s
 %global git1 https://github.com/projectatomic/%{repo}-storage-setup/
-%global commit1 96594f9c65ac8f153c5db6f0c7b8d81436193313
+%global commit1 abe18de71ceb56af5af52b47f06329443c44badf
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{repo}-storage-setup
 
@@ -51,12 +51,12 @@
 
 # docker-containerd
 %global git7 https://github.com/docker/containerd
-%global commit7 837e8c5e1cad013ed57f5c2090c8591c10cbbdae
+%global commit7 52ef1ceb4b660c42cf4ea9013180a5663968d4c7
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 
 # docker-init
 %global git8 https://github.com/crosbymichael/grimes
-%global commit8 15ecf9414859b16a8a19ac6748a622a5498d57e3
+%global commit8 74341e923bdf06cfb6b70cf54089c4d3ac87ec2d
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
@@ -85,7 +85,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 6.git%{shortcommit0}%{?dist}
+Release: 7.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -726,6 +726,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Fri Oct 21 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-7.git3625f73
+- built docker @projectatomic/docker-1.13 commit 3625f73
+- built docker-selinux commit 
+- built d-s-s commit abe18de
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 02f8fa7
+- built docker-utils commit 
+- built docker-containerd commit 52ef1ce
+- built docker-v1.10-migrator commit 994c35c
+
 * Mon Oct 17 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-6.git222ea44
 - built docker @projectatomic/docker-1.13 commit 222ea44
 - built docker-selinux commit 
