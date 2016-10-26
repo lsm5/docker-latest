@@ -85,7 +85,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 7.git%{shortcommit0}%{?dist}
+Release: 8.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -138,11 +138,11 @@ Requires: device-mapper-libs >= 1.02.90-1
 %global docker_rel 3.git%{docker_shortcommit}%{?dist}
 
 # Resolves: #1379184 - include epoch
-Requires: %{repo}-common = %{epoch}:%{docker_ver}-%{docker_rel}
+Requires: %{repo}-common >= %{epoch}:%{docker_ver}-%{docker_rel}
 
 # RE: rhbz#1195804 - ensure min NVR for selinux-policy
 Requires: selinux-policy >= %{selinux_policyver}
-Requires: container-selinux = %{epoch}:%{docker_ver}-%{docker_rel}
+Requires: container-selinux >= %{epoch}:%{docker_ver}-%{docker_rel}
 
 # Resolves: rhbz#1045220
 Requires: xz
@@ -726,6 +726,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Wed Oct 26 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-8.git3625f73
+- built docker @projectatomic/docker-1.13 commit 3625f73
+- built docker-selinux commit 
+- built d-s-s commit abe18de
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 02f8fa7
+- built docker-utils commit 
+- built docker-containerd commit 52ef1ce
+- built docker-v1.10-migrator commit 994c35c
+
 * Fri Oct 21 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-7.git3625f73
 - built docker @projectatomic/docker-1.13 commit 3625f73
 - built docker-selinux commit 
