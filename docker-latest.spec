@@ -90,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 11.git%{shortcommit0}%{?dist}
+Release: 12.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -472,9 +472,10 @@ popd
 
 # compile docker-proxy first - otherwise deps in gopath conflict with the others below and this fails. Remove libnetwork libs then.
 pushd libnetwork-%{commit9}
-ln -s $(pwd) src/github.com/docker/libnetwork
+mkdir -p src/github.com/docker/libnetwork
+ln -s $(pwd)/* src/github.com/docker/libnetwork
 export GOPATH=$(pwd)
-go build -ldflags="-linkmode=external" -o docker-proxy src/github.com/docker/libnetwork/cmd/proxy
+go build -ldflags="-linkmode=external" -o docker-proxy github.com/docker/libnetwork/cmd/proxy
 popd
 
 export DOCKER_GITCOMMIT="%{shortcommit0}/%{version}"
@@ -749,6 +750,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Mon Oct 31 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-12.git99476ca
+- built docker @projectatomic/docker-1.13 commit 99476ca
+- built docker-selinux commit 
+- built d-s-s commit 308c5e3
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 6b13ece
+- built docker-utils commit 
+- built docker-containerd commit 52ef1ce
+- built docker-v1.10-migrator commit 994c35c
+
 * Mon Oct 31 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-11.git99476ca
 - built docker @projectatomic/docker-1.13 commit 99476ca
 - built docker-selinux commit 
