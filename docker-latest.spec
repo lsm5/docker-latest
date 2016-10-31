@@ -90,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 9.git%{shortcommit0}%{?dist}
+Release: 10.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -120,6 +120,8 @@ Source17: %{git9}/archive/%{commit9}/libnetwork-%{shortcommit9}.tar.gz
 
 BuildRequires: git
 BuildRequires: glibc-static
+BuildRequires: gpgme-devel
+BuildRequires: libassuan-devel
 BuildRequires: %{?go_compiler:compiler(go-compiler)}%{!?go_compiler:golang >= 1.6.2}
 BuildRequires: go-md2man
 BuildRequires: device-mapper-devel
@@ -137,6 +139,9 @@ BuildRequires: pkgconfig(systemd)
 # Resolves: rhbz#1165615
 Requires: device-mapper-libs >= 1.02.90-1
 %endif
+
+Requires: skopeo-containers
+Requires: gnupg
 
 %global docker_ver 1.12.2
 %global docker_commit 15c82b8be1843ef8f2e7e4c1ee639e9ef622face
@@ -742,6 +747,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Mon Oct 31 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-10.git99476ca
+- built docker @projectatomic/docker-1.13 commit 99476ca
+- built docker-selinux commit 
+- built d-s-s commit 308c5e3
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 6b13ece
+- built docker-utils commit 
+- built docker-containerd commit 52ef1ce
+- built docker-v1.10-migrator commit 994c35c
+
 * Mon Oct 31 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-9.git99476ca
 - built docker @projectatomic/docker-1.13 commit 99476ca
 - built docker-selinux commit 
