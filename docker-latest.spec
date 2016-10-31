@@ -28,14 +28,14 @@
 
 # docker
 %global git0 https://github.com/projectatomic/%{repo}
-%global commit0 3625f731e409765c0da3beb42581c754ccec7abd
+%global commit0 99476ca97f1226e13bb7dc62f376afe10b0a617d
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.13
 
 # d-s-s
 %global git1 https://github.com/projectatomic/%{repo}-storage-setup/
-%global commit1 abe18de71ceb56af5af52b47f06329443c44badf
+%global commit1 308c5e37223e54072a6b4be1dd8998aad7e91e65
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{repo}-storage-setup
 
@@ -45,8 +45,8 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 
 # docker-runc
-%global git6 https://github.com/opencontainers/runc/
-%global commit6 02f8fa7863dd3f82909a73e2061897828460d52f
+%global git6 https://github.com/projectatomic/runc/
+%global commit6 6b13ece8752494f93b26883ee61111af626ed9d8
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 
 # docker-containerd
@@ -58,6 +58,11 @@
 %global git8 https://github.com/crosbymichael/grimes
 %global commit8 74341e923bdf06cfb6b70cf54089c4d3ac87ec2d
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
+
+# docker-proxy
+%global git9 https://github.com/docker/libnetwork
+%global commit9 0f534354b813003a754606689722fe253101bc4e
+%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 
 # docker-selinux stuff (prefix with ds_ for version/release etc.)
 # Some bits borrowed from the openstack-selinux package
@@ -85,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 8.git%{shortcommit0}%{?dist}
+Release: 9.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -106,6 +111,7 @@ Source13: %{git7}/archive/%{commit7}/containerd-%{shortcommit7}.tar.gz
 Source14: %{name}-containerd.service
 Source15: v1.10-migrator-helper
 Source16: %{git8}/archive/%{commit8}/grimes-%{shortcommit8}.tar.gz
+Source17: %{git9}/archive/%{commit9}/libnetwork-%{shortcommit9}.tar.gz
 
 %if 0%{?with_debug}
 # Build with debug
@@ -447,6 +453,9 @@ tar zxf %{SOURCE13}
 # untar docker-init
 tar zxf %{SOURCE16}
 
+# untar docker-proxy
+tar zxf %{SOURCE17}
+
 %build
 # set up temporary build gopath, and put our directory there
 mkdir _build
@@ -498,6 +507,11 @@ pushd grimes-%{commit8}
 make
 popd
 
+# build docker-proxy
+pushd libnetwork-%{commit9}
+go build -ldflags="-linkmode=external" -o docker-proxy github.com/docker/libnetwork/cmd/proxy
+popd
+
 %install
 # install binary
 install -d %{buildroot}%{_bindir}
@@ -505,8 +519,10 @@ rm bundles/latest/dynbinary-client/*.md5 bundles/latest/dynbinary-client/*.sha25
 rm bundles/latest/dynbinary-daemon/*.md5 bundles/latest/dynbinary-daemon/*.sha256
 install -p -m 755 bundles/latest/dynbinary-client/%{repo}-%{version}* %{buildroot}%{_bindir}/%{repo}-latest
 install -p -m 755 bundles/latest/dynbinary-daemon/%{repo}d-%{version}* %{buildroot}%{_bindir}/%{repo}d-latest
+
+#install docker-proxy
 install -d %{buildroot}%{_libexecdir}/%{repo}
-install -p -m 755 bundles/latest/dynbinary-daemon/%{repo}-proxy-%{version}* %{buildroot}%{_libexecdir}/%{repo}/%{repo}-proxy-latest
+install -p -m 755 libnetwork-%{commit9}/docker-proxy %{buildroot}%{_libexecdir}/%{repo}/%{repo}-proxy-latest
 
 # install manpages
 install -d %{buildroot}%{_mandir}/man1
@@ -726,6 +742,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Mon Oct 31 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-9.git99476ca
+- built docker @projectatomic/docker-1.13 commit 99476ca
+- built docker-selinux commit 
+- built d-s-s commit 308c5e3
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 6b13ece
+- built docker-utils commit 
+- built docker-containerd commit 52ef1ce
+- built docker-v1.10-migrator commit 994c35c
+
 * Wed Oct 26 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-8.git3625f73
 - built docker @projectatomic/docker-1.13 commit 3625f73
 - built docker-selinux commit 
