@@ -90,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 14.git%{shortcommit0}%{?dist}
+Release: 15.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -443,7 +443,6 @@ cp %{SOURCE9} .
 tar zxf %{SOURCE1}
 pushd %{repo}-storage-setup-%{commit1}
 sed -i 's/%{repo}/%{name}/g' %{repo}-storage-setup*
-sed -i 's/%{repo}/%{name}/g' Makefile
 mv %{repo}-storage-setup.sh %{name}-storage-setup.sh
 mv %{repo}-storage-setup-override.conf %{name}-storage-setup-override.conf
 mv %{repo}-storage-setup.1 %{name}-storage-setup.1
@@ -746,6 +745,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Fri Nov 04 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-15.git99476ca
+- built docker @projectatomic/docker-1.13 commit 99476ca
+- built docker-selinux commit 
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 6b13ece
+- built docker-utils commit 
+- built docker-containerd commit 52ef1ce
+- built docker-v1.10-migrator commit 994c35c
+
 * Fri Nov 04 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-14.git99476ca
 - built docker @projectatomic/docker-1.13 commit 99476ca
 - built docker-selinux commit 
