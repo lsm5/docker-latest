@@ -603,9 +603,6 @@ install -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 install -p -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/sysconfig/%{name}-network
 
-# install defalut seccomp profile
-install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/%{name}/seccomp.json
-
 %if 0%{?with_unit_test}
 install -d -m 0755 %{buildroot}%{_sharedstatedir}/%{name}-unit-test/
 cp -pav VERSION Dockerfile %{buildroot}%{_sharedstatedir}/%{name}-unit-test/.
@@ -631,6 +628,8 @@ done
 
 # install %%{repo} config directory
 install -dp %{buildroot}%{_sysconfdir}/%{name}
+# install defalut seccomp profile
+install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/%{name}/seccomp.json
 
 # install d-s-s
 pushd %{repo}-storage-setup-%{commit1}
