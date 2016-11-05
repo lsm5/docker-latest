@@ -28,7 +28,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/%{repo}
-%global commit0 99476ca97f1226e13bb7dc62f376afe10b0a617d
+%global commit0 b5f2bae7e2bf2b03ffd6924684339ab1ff280565
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.13
@@ -90,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 15.git%{shortcommit0}%{?dist}
+Release: 16.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -101,7 +101,7 @@ Source0: %{git0}/archive/%{commit0}/%{repo}-%{shortcommit0}.tar.gz
 Source1: %{git1}/archive/%{commit1}/%{repo}-storage-setup-%{shortcommit1}.tar.gz
 Source5: %{name}.service
 Source6: %{name}.sysconfig
-Source7: %{name}-storage.sysconfig
+Source7: seccomp.json
 Source8: %{name}-logrotate.sh
 Source9: README.%{name}-logrotate
 Source10: %{name}-network.sysconfig
@@ -602,7 +602,9 @@ install -p -m 755 grimes-%{commit8}/init %{buildroot}%{_libexecdir}/%{repo}/%{re
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 install -p -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/sysconfig/%{name}-network
-install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/sysconfig/%{name}-storage
+
+# install defalut seccomp profile
+install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/%{name}/seccomp.json
 
 %if 0%{?with_unit_test}
 install -d -m 0755 %{buildroot}%{_sharedstatedir}/%{name}-unit-test/
@@ -693,6 +695,7 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %dir %{_sharedstatedir}/%{name}
 %{_udevrulesdir}/80-%{name}.rules
 %{_sysconfdir}/%{name}
+%{_sysconfdir}/%{name}/seccomp.json
 # d-s-s specific
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage-setup
 %{_unitdir}/%{name}-storage-setup.service
@@ -745,6 +748,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Sat Nov 05 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-16.gitb5f2bae
+- built docker @projectatomic/docker-1.13 commit b5f2bae
+- built docker-selinux commit 
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 6b13ece
+- built docker-utils commit 
+- built docker-containerd commit 52ef1ce
+- built docker-v1.10-migrator commit 994c35c
+
 * Fri Nov 04 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-15.git99476ca
 - built docker @projectatomic/docker-1.13 commit 99476ca
 - built docker-selinux commit 

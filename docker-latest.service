@@ -12,6 +12,7 @@ EnvironmentFile=-/etc/sysconfig/docker-latest-storage
 EnvironmentFile=-/etc/sysconfig/docker-latest-network
 Environment=GOTRACEBACK=crash
 ExecStart=/usr/bin/dockerd-latest \
+          --seccomp-profile=/etc/docker-latest/seccomp.json \
           --add-runtime oci=/usr/libexec/docker/docker-runc-latest \
           --default-runtime=oci \
           --containerd /run/containerd.sock \
