@@ -28,7 +28,7 @@
 
 # docker
 %global git0 https://github.com/projectatomic/%{repo}
-%global commit0 b5f2bae7e2bf2b03ffd6924684339ab1ff280565
+%global commit0 6cd0bbed209cdcf897cee83450e557bff0d6cbd8
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 # docker_branch used in %%check
 %global docker_branch docker-1.13
@@ -55,8 +55,8 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 
 # docker-init
-%global git8 https://github.com/crosbymichael/grimes
-%global commit8 74341e923bdf06cfb6b70cf54089c4d3ac87ec2d
+%global git8 https://github.com/krallin/tini
+%global commit8 v0.13.0
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 
 # docker-proxy
@@ -90,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 16.git%{shortcommit0}%{?dist}
+Release: 17.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -110,7 +110,7 @@ Source12: %{git6}/archive/%{commit6}/runc-%{shortcommit6}.tar.gz
 Source13: %{git7}/archive/%{commit7}/containerd-%{shortcommit7}.tar.gz
 Source14: %{name}-containerd.service
 Source15: v1.10-migrator-helper
-Source16: %{git8}/archive/%{commit8}/grimes-%{shortcommit8}.tar.gz
+Source16: %{git8}/archive/%{commit8}/tini-%{shortcommit8}.tar.gz
 Source17: %{git9}/archive/%{commit9}/libnetwork-%{shortcommit9}.tar.gz
 
 %if 0%{?with_debug}
@@ -119,6 +119,8 @@ Source17: %{git9}/archive/%{commit9}/libnetwork-%{shortcommit9}.tar.gz
 %endif
 
 BuildRequires: git
+BuildRequires: cmake
+BuildRequires: vim-common
 BuildRequires: glibc-static
 BuildRequires: gpgme-devel
 BuildRequires: libassuan-devel
@@ -521,8 +523,10 @@ make
 popd
 
 # build docker-init
-pushd grimes-%{commit8}
+pushd tini-%{commit8}
 make
+cmake -DMINIMAL=ON .
+make tini-static
 popd
 
 %install
@@ -594,9 +598,9 @@ install -p -m 755 containerd-%{commit7}/bin/containerd %{buildroot}%{_libexecdir
 install -p -m 755 containerd-%{commit7}/bin/containerd-shim %{buildroot}%{_libexecdir}/%{repo}/%{repo}-containerd-shim-latest
 install -p -m 755 containerd-%{commit7}/bin/ctr %{buildroot}%{_libexecdir}/%{repo}/%{repo}-ctr-latest
 
-#install grimes
+#install tini
 install -d %{buildroot}%{_libexecdir}/%{repo}
-install -p -m 755 grimes-%{commit8}/init %{buildroot}%{_libexecdir}/%{repo}/%{repo}-init-latest
+install -p -m 755 tini-%{commit8}/tini-static %{buildroot}%{_libexecdir}/%{repo}/%{repo}-init-latest
 
 # for additional args
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
@@ -747,6 +751,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-17.git6cd0bbe
+- built docker @projectatomic/docker-1.13 commit 6cd0bbe
+- built docker-selinux commit 
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 6b13ece
+- built docker-utils commit 
+- built docker-containerd commit 52ef1ce
+- built docker-v1.10-migrator commit 994c35c
+
 * Sat Nov 05 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-16.gitb5f2bae
 - built docker @projectatomic/docker-1.13 commit b5f2bae
 - built docker-selinux commit 
