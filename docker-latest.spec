@@ -46,12 +46,12 @@
 
 # docker-runc
 %global git6 https://github.com/projectatomic/runc/
-%global commit6 6b13ece8752494f93b26883ee61111af626ed9d8
+%global commit6 ac031b5bf1cc92239461125f4c1ffb760522bbf2
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 
 # docker-containerd
 %global git7 https://github.com/docker/containerd
-%global commit7 52ef1ceb4b660c42cf4ea9013180a5663968d4c7
+%global commit7 8517738ba4b82aff5662c97ca4627e7e4d03b531
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 
 # docker-init
@@ -90,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 19.git%{shortcommit0}%{?dist}
+Release: 20.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -753,6 +753,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-20.git6cd0bbe
+- built docker @projectatomic/docker-1.13 commit 6cd0bbe
+- built docker-selinux commit 
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit ac031b5
+- built docker-utils commit 
+- built docker-containerd commit 8517738
+- built docker-v1.10-migrator commit 994c35c
+
 * Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-19.git6cd0bbe
 - built docker @projectatomic/docker-1.13 commit 6cd0bbe
 - built docker-selinux commit 
