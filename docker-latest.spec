@@ -56,7 +56,7 @@
 
 # docker-init
 %global git8 https://github.com/krallin/tini
-%global commit8 v0.13.0
+%global commit8 4a92b9e20194701a37f34c2822afe94ddd733d17
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 
 # docker-proxy
@@ -90,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 18.git%{shortcommit0}%{?dist}
+Release: 19.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -753,6 +753,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-19.git6cd0bbe
+- built docker @projectatomic/docker-1.13 commit 6cd0bbe
+- built docker-selinux commit 
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 6b13ece
+- built docker-utils commit 
+- built docker-containerd commit 52ef1ce
+- built docker-v1.10-migrator commit 994c35c
+
 * Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-18.git6cd0bbe
 - built docker @projectatomic/docker-1.13 commit 6cd0bbe
 - built docker-selinux commit 
