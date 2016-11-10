@@ -90,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 21.git%{shortcommit0}%{?dist}
+Release: 22.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -525,7 +525,6 @@ popd
 
 # build docker-init
 pushd tini-%{commit8}
-make
 cmake -DMINIMAL=ON .
 make tini-static
 popd
@@ -753,6 +752,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-22.git6cd0bbe
+- built docker @projectatomic/docker-1.13 commit 6cd0bbe
+- built docker-selinux commit 
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 6b13ece
+- built docker-utils commit 
+- built docker-containerd commit 8517738
+- built docker-v1.10-migrator commit 994c35c
+
 * Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-21.git6cd0bbe
 - built docker @projectatomic/docker-1.13 commit 6cd0bbe
 - built docker-selinux commit 
