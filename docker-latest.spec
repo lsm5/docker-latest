@@ -90,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 17.git%{shortcommit0}%{?dist}
+Release: 18.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -112,6 +112,7 @@ Source14: %{name}-containerd.service
 Source15: v1.10-migrator-helper
 Source16: %{git8}/archive/%{commit8}/tini-%{shortcommit8}.tar.gz
 Source17: %{git9}/archive/%{commit9}/libnetwork-%{shortcommit9}.tar.gz
+Source18: %{name}-storage.sysconfig
 
 %if 0%{?with_debug}
 # Build with debug
@@ -606,6 +607,7 @@ install -p -m 755 tini-%{commit8}/tini-static %{buildroot}%{_libexecdir}/%{repo}
 install -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 install -p -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/sysconfig/%{name}-network
+install -p -m 644 %{SOURCE18} %{buildroot}%{_sysconfdir}/sysconfig/%{name}-storage
 
 %if 0%{?with_unit_test}
 install -d -m 0755 %{buildroot}%{_sharedstatedir}/%{name}-unit-test/
@@ -751,6 +753,16 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-18.git6cd0bbe
+- built docker @projectatomic/docker-1.13 commit 6cd0bbe
+- built docker-selinux commit 
+- built d-s-s commit c9faba1
+- built docker-novolume-plugin commit 
+- built docker-runc @projectatomic/runc-1.13 commit 6b13ece
+- built docker-utils commit 
+- built docker-containerd commit 52ef1ce
+- built docker-v1.10-migrator commit 994c35c
+
 * Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-17.git6cd0bbe
 - built docker @projectatomic/docker-1.13 commit 6cd0bbe
 - built docker-selinux commit 
