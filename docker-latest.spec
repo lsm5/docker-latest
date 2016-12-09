@@ -101,6 +101,9 @@ Source0: %{git0}/archive/%{commit0}/%{repo}-%{shortcommit0}.tar.gz
 Source1: %{git1}/archive/%{commit1}/%{repo}-storage-setup-%{shortcommit1}.tar.gz
 Source5: %{name}.service
 Source6: %{name}.sysconfig
+# remember to sync this json with docker's one upstream!!! there are syscalls
+# enabled in our seccomp.json for systemd for instance, while upstream doesn't
+# have them.
 Source7: seccomp.json
 Source8: %{name}-logrotate.sh
 Source9: README.%{name}-logrotate
