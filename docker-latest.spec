@@ -90,7 +90,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 22.git%{shortcommit0}%{?dist}
+Release: 23.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -755,6 +755,9 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Sat Dec 10 2016 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 2:1.13-23.git6cd0bbe
+- Rebuild for gpgme 1.18
+
 * Thu Nov 10 2016 Antonio Murdaca <runcom@fedoraproject.org> - 2:1.13-22.git6cd0bbe
 - built docker @projectatomic/docker-1.13 commit 6cd0bbe
 - built docker-selinux commit 
