@@ -64,33 +64,12 @@
 %global commit9 0f534354b813003a754606689722fe253101bc4e
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 
-# docker-selinux stuff (prefix with ds_ for version/release etc.)
-# Some bits borrowed from the openstack-selinux package
-%global selinuxtype targeted
-%global moduletype services
-%global modulenames container
-
-# Usage: _format var format
-# Expand 'modulenames' into various formats as needed
-# Format must contain '$x' somewhere to do anything useful
-%global _format() export %1=""; for x in %{modulenames}; do %1+=%2; %1+=" "; done;
-
-# Relabel files
-%global relabel_files() %{_sbindir}/restorecon -R %{_bindir}/%{repo} %{_localstatedir}/run/containerd.sock %{_localstatedir}/run/%{repo}.sock %{_localstatedir}/run/%{repo}.pid %{_sysconfdir}/%{repo} %{_localstatedir}/log/%{repo} %{_localstatedir}/log/lxc %{_localstatedir}/lock/lxc %{_unitdir}/%{repo}.service %{_unitdir}/%{repo}-containerd.service %{_sysconfdir}/%{repo} &> /dev/null || :
-
-# Version of SELinux we were using
-%if 0%{?fedora} >= 22
-%global selinux_policyver 3.13.1-220
-%else
-%global selinux_policyver 3.13.1-39
-%endif
-
 Name: %{repo}-latest
 %if 0%{?fedora} || 0%{?centos}
 Epoch: 2
 %endif
 Version: 1.13
-Release: 23.git%{shortcommit0}%{?dist}
+Release: 24.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -157,9 +136,7 @@ Requires: gnupg
 # Resolves: #1379184 - include epoch
 Requires: %{repo}-common >= %{epoch}:%{docker_ver}-%{docker_rel}
 
-# RE: rhbz#1195804 - ensure min NVR for selinux-policy
-Requires: selinux-policy >= %{selinux_policyver}
-Requires: container-selinux >= %{epoch}:%{docker_ver}-%{docker_rel}
+Requires: container-selinux >= 2:2.0-2
 
 # Resolves: rhbz#1045220
 Requires: xz
@@ -755,6 +732,9 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Fri Jan 06 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13-24.git6cd0bbe
+- require container-selinux >= 2:2.0-2 (now an independent package)
+
 * Sat Dec 10 2016 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 2:1.13-23.git6cd0bbe
 - Rebuild for gpgme 1.18
 
