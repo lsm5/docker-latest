@@ -69,7 +69,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 24.git%{shortcommit0}%{?dist}
+Release: 25.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -136,7 +136,7 @@ Requires: gnupg
 # Resolves: #1379184 - include epoch
 Requires: %{repo}-common >= %{epoch}:%{docker_ver}-%{docker_rel}
 
-Requires: container-selinux >= 2:2.0-2
+Requires(pre): container-selinux >= 2:2.2-2
 
 # Resolves: rhbz#1045220
 Requires: xz
@@ -732,6 +732,10 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Sat Jan 07 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13-25.git6cd0bbe
+- require container-selinux >= 2:2.2-2 with relabeling support for
+docker-latest files
+
 * Fri Jan 06 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13-24.git6cd0bbe
 - require container-selinux >= 2:2.0-2 (now an independent package)
 
