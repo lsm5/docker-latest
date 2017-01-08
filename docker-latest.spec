@@ -8,6 +8,12 @@
 %global with_unit_test 0
 %endif
 
+%if 0%{?fedora}
+%global with_migrator 1
+%else
+%global with_migrator 0
+%endif
+
 # modifying the dockerinit binary breaks the SHA1 sum check by docker
 %global __os_install_post %{_rpmconfigdir}/brp-compress
 
@@ -39,10 +45,12 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{repo}-storage-setup
 
+%if %{with_migrator}
 # v1.10-migrator
 %global git5 https://github.com/%{repo}/v1.10-migrator
 %global commit5 994c35cbf7ae094d4cb1230b85631ecedd77b0d8
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%endif # with_migrator
 
 # docker-runc
 %global git6 https://github.com/projectatomic/runc/
@@ -87,11 +95,15 @@ Source7: seccomp.json
 Source8: %{name}-logrotate.sh
 Source9: README.%{name}-logrotate
 Source10: %{name}-network.sysconfig
+%if %{with_migrator}
 Source11: %{git5}/archive/%{commit5}/v1.10-migrator-%{shortcommit5}.tar.gz
+%endif # with_migrator
 Source12: %{git6}/archive/%{commit6}/runc-%{shortcommit6}.tar.gz
 Source13: %{git7}/archive/%{commit7}/containerd-%{shortcommit7}.tar.gz
 Source14: %{name}-containerd.service
+%if %{with_migrator}
 Source15: v1.10-migrator-helper
+%endif # with_migrator
 Source16: %{git8}/archive/%{commit8}/tini-%{shortcommit8}.tar.gz
 Source17: %{git9}/archive/%{commit9}/libnetwork-%{shortcommit9}.tar.gz
 Source18: %{name}-storage.sysconfig
@@ -392,6 +404,7 @@ Provides: %{name}-io-zsh-completion = %{epoch}:%{version}-%{release}
 %description zsh-completion
 This package installs %{summary}.
 
+%if %{with_migrator}
 %package v1.10-migrator
 Summary: Calculates SHA256 checksums for docker layer content
 License: ASL 2.0 and CC-BY-SA
@@ -406,6 +419,7 @@ The migration usually runs on daemon startup but it can be quite slow(usually
 100-200MB/s) and daemon will not be able to accept requests during
 that time. You can run this tool instead while the old daemon is still
 running and skip checksum calculation on startup.
+%endif
 
 %package rhsubscription
 Summary: Red Hat subscription management files needed on the host to enable RHEL containers
@@ -434,8 +448,10 @@ mv %{repo}-storage-setup.service %{name}-storage-setup.service
 sed -i 's/%{name}_devmapper_meta_dir/%{repo}_devmapper_meta_dir/g' %{repo}-storage-setup*
 popd
 
+%if %{with_migrator}
 # untar v1.10-migrator
 tar zxf %{SOURCE11}
+%endif
 
 # untar docker-runc
 tar zxf %{SOURCE12}
@@ -484,6 +500,7 @@ popd
 cp contrib/syntax/vim/LICENSE LICENSE-vim-syntax
 cp contrib/syntax/vim/README.md README-vim-syntax.md
 
+%if %{with_migrator}
 # build v1.10-migrator
 pushd v1.10-migrator-%{commit5}
 %if 0%{?fedora}
@@ -492,6 +509,7 @@ make v1.10-migrator-local
 go build -o v1.10-migrator-local .
 %endif
 popd
+%endif # with_migrator
 
 # build docker-runc
 pushd runc-%{commit6}
@@ -621,12 +639,14 @@ pushd %{repo}-storage-setup-%{commit1}
 make install DESTDIR=%{buildroot} DOCKER=%{name}
 popd
 
+%if %{with_migrator}
 # install v1.10-migrator
 install -d %{buildroot}%{_bindir}
 install -p -m 700 v1.10-migrator-%{commit5}/v1.10-migrator-local %{buildroot}%{_bindir}/%{name}-v1.10-migrator-local
 
 # install v1.10-migrator-helper
 install -p -m 700 %{SOURCE15} %{buildroot}%{_bindir}/%{name}-v1.10-migrator-helper
+%endif # with_migrator
 
 # install secrets patch directory
 install -d -p -m 750 %{buildroot}/%{_datadir}/rhel/secrets
@@ -721,10 +741,12 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %files zsh-completion
 %{_datadir}/zsh/site-functions/_%{name}
 
+%if %{with_migrator}
 %files v1.10-migrator
 %license v1.10-migrator-%{commit5}/LICENSE.{code,docs}
 %doc v1.10-migrator-%{commit5}/{CONTRIBUTING,README}.md
 %{_bindir}/%{name}-v1.10-migrator-*
+%endif # with_migrator
 
 %files rhsubscription
 %{_datadir}/rhel/secrets/etc-pki-entitlement
