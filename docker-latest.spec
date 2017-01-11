@@ -17,6 +17,13 @@
 # modifying the dockerinit binary breaks the SHA1 sum check by docker
 %global __os_install_post %{_rpmconfigdir}/brp-compress
 
+# default overlay2 storage only on Fedora 26 and later
+%if 0%{?fedora} >= 26
+%global custom_storage 1
+%else
+%global custom_storage 0
+%endif
+
 # docker builds in a checksum of dockerinit into docker,
 # so stripping the binaries breaks docker
 %if 0%{?with_debug}
@@ -41,7 +48,7 @@
 
 # d-s-s
 %global git1 https://github.com/projectatomic/%{repo}-storage-setup/
-%global commit1 c9faba1908b8e77f7c7c443f26e3b3cb1450d1a0
+%global commit1 6709fe6c6b0d154063799364eb1a944d065bab93
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
 
@@ -186,6 +193,11 @@ Recommends: oci-systemd-hook
 Requires: oci-register-machine
 Requires: oci-systemd-hook
 %endif
+
+%if %{custom_storage}
+Provides: variant_config(Server)
+Provides: variant_config(Workstation)
+%endif # custom_storage
 
 %description
 Docker is an open-source engine that automates the deployment of any
@@ -446,6 +458,13 @@ mv %{repo}-storage-setup.1 %{name}-storage-setup.1
 mv %{repo}-storage-setup.conf %{name}-storage-setup.conf
 mv %{repo}-storage-setup.service %{name}-storage-setup.service
 sed -i 's/%{name}_devmapper_meta_dir/%{repo}_devmapper_meta_dir/g' %{repo}-storage-setup*
+%if %{custom_storage}
+cp %{name}-storage-setup-override.conf %{name}-storage-setup-server
+echo 'STORAGE_DRIVER=overlay2' >> %{name}-storage-setup-server
+cp %{name}-storage-setup-server %{name}-storage-setup-workstation
+echo 'DOCKER_ROOT_VOLUME=yes' >> %{name}-storage-setup-server
+ln -s %{name}-storage-setup-override.conf %{name}-storage-setup-default
+%endif # custom_storage
 popd
 
 %if %{with_migrator}
@@ -493,6 +512,7 @@ rename %{repo} %{name} *
 popd
 pushd man/man5
 rename %{repo} %{name} *
+mv Dockerfile.5 Dockerfile-latest.5
 popd
 pushd man/man8
 mv %{repo}d.8 %{repo}d-latest.8
@@ -637,6 +657,11 @@ install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/%{name}/seccomp.json
 # install d-s-s
 pushd %{repo}-storage-setup-%{commit1}
 make install DESTDIR=%{buildroot} DOCKER=%{name} DSSLIBDIR=%{buildroot}%{dss_libdir}
+%if %{custom_storage}
+install -p -m 644 %{name}-storage-setup-server %{buildroot}%{_sysconfdir}/sysconfig
+install -p -m 644 %{name}-storage-setup-workstation %{buildroot}%{_sysconfdir}/sysconfig
+install -p -m 644 %{name}-storage-setup-default %{buildroot}%{_sysconfdir}/sysconfig
+%endif # custom_storage
 popd
 
 %if %{with_migrator}
@@ -678,6 +703,29 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %postun
 %systemd_postun_with_restart %{repo}
 
+%if %{custom_storage}
+%posttrans
+# If we don't yet have a symlink or existing file for
+# %%{name}-storage-setup.conf, create it.
+if [ ! -e %{_sysconfdir}/sysconfig/%{name}-storage-setup ]; then
+    # Import /etc/os-release to get the variant definition
+    . %{_sysconfdir}/os-release || :
+
+    case "$VARIANT_ID" in
+        server)
+            ln -sf %{name}-storage-setup-server %{_sysconfdir}/sysconfig/%{name}-storage-setup || :
+            ;;
+        workstation)
+            ln -sf %{name}-storage-setup-workstation %{_sysconfdir}/sysconfig/%{name}-storage-setup || :
+            ;;
+        *)
+            ln -sf %{name}-storage-setup-default %{_sysconfdir}/sysconfig/%{name}-storage-setup || :
+            ;;
+        esac
+fi
+%endif # custom_storage
+
+
 #define license tag if not already defined
 %{!?_licensedir:%global license %doc}
 
@@ -685,7 +733,9 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %license LICENSE LICENSE-vim-syntax
 %doc AUTHORS CHANGELOG.md CONTRIBUTING.md MAINTAINERS NOTICE README.md 
 %doc README-vim-syntax.md
-%config(noreplace) %{_sysconfdir}/sysconfig/%{name}*
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-network
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage
 %{_mandir}/man1/%{name}*.1.gz
 # FIXME(runcom): man5 install above
 %{_mandir}/man5/*.5.gz
@@ -701,7 +751,14 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_sysconfdir}/%{name}
 %{_sysconfdir}/%{name}/seccomp.json
 # d-s-s specific
+%if %{custom_storage}
+%ghost %config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage-setup
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage-setup-server
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage-setup-workstation
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage-setup-default
+%else # custom_storage
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}-storage-setup
+%endif # custom_storage
 %{_unitdir}/%{name}-storage-setup.service
 %{_bindir}/%{name}-storage-setup
 %dir %{dss_libdir}
