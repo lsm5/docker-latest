@@ -43,7 +43,7 @@
 %global git1 https://github.com/projectatomic/%{repo}-storage-setup/
 %global commit1 c9faba1908b8e77f7c7c443f26e3b3cb1450d1a0
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global dss_libdir %{_exec_prefix}/lib/%{repo}-storage-setup
+%global dss_libdir %{_exec_prefix}/lib/%{name}-storage-setup
 
 %if %{with_migrator}
 # v1.10-migrator
@@ -54,7 +54,7 @@
 
 # docker-runc
 %global git6 https://github.com/projectatomic/runc/
-%global commit6 6b13ece8752494f93b26883ee61111af626ed9d8
+%global commit6 2f7393a47307a16f8cee44a37b262e8b81021e3e
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 
 # docker-containerd
@@ -77,7 +77,7 @@ Name: %{repo}-latest
 Epoch: 2
 %endif
 Version: 1.13
-Release: 25.git%{shortcommit0}%{?dist}
+Release: 26.git%{shortcommit0}%{?dist}
 Summary: Automates deployment of containerized applications
 License: ASL 2.0
 URL: https://%{provider}.%{provider_tld}/projectatomic/%{repo}
@@ -636,7 +636,7 @@ install -p -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/%{name}/seccomp.json
 
 # install d-s-s
 pushd %{repo}-storage-setup-%{commit1}
-make install DESTDIR=%{buildroot} DOCKER=%{name}
+make install DESTDIR=%{buildroot} DOCKER=%{name} DSSLIBDIR=%{buildroot}%{dss_libdir}
 popd
 
 %if %{with_migrator}
@@ -754,6 +754,12 @@ ln -s %{_sysconfdir}/rhsm/ca/redhat-uep.pem %{buildroot}/%{_sysconfdir}/%{name}/
 %{_datadir}/rhel/secrets/rhsm
 
 %changelog
+* Fri Jan 13 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13-26.git6cd0bbe
+- Resolves: CVE-2016-9962
+- built docker-runc @projectatomic/docker-1.13 commit 2f7393a
+- change install location from /usr/lib/docker-storage-setup to
+/usr/lib/docker-latest-storage-setup
+
 * Sat Jan 07 2017 Lokesh Mandvekar <lsm5@fedoraproject.org> - 2:1.13-25.git6cd0bbe
 - require container-selinux >= 2:2.2-2 with relabeling support for
 docker-latest files
